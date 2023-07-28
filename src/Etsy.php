@@ -144,7 +144,7 @@ class Etsy {
    * @return Etsy\Resources\User
    */
   public function getUser($user_id = null) {
-    $user_id ?? explode(".", $this->api_key)[0];
+    $user_id = $user_id ?? explode(".", $this->api_key)[0];
     $response = static::$client->get("/application/users/{$user_id}", []);
     return static::getResource($response, "User");
   }
