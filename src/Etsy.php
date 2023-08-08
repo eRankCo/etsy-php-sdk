@@ -70,6 +70,10 @@ class Etsy {
     if(!count($response->results) || !isset($response->results)) {
       return $collection;
     }
+    // Added count when the count is in the response
+    if ($response->count) {
+      $collection->count = $response->count;
+    }
     $collection->data = static::createCollectionResources(
       $response->results,
       $resource
