@@ -449,7 +449,7 @@ class Listing extends Resource {
   public function getTransactions(array $params = []) {
     return $this->request(
       "GET",
-      "/application/shops/{$this->shop_id}/listing/{$this->listing_id}/transactions",
+      "/application/shops/{$this->shop_id}/listings/{$this->listing_id}/transactions",
       "Transaction",
       $params
     );
