@@ -121,26 +121,35 @@ class Client {
     try {
       $client = $this->createHttpClient();
       $response = $client->{$method}(self::API_URL.$uri, $opts);
+      if (function_exists('handleEtsyResponse')) {
+        handleEtsyResponse($response, $uri, $method, $opts);
+      }
       $response = json_decode($response->getBody(), false);
-      if($response) {
+      if ($response) {
         $response->uri = $uri;
       }
       return $response;
     }
-    catch(\Exception $e) {
+    catch(\GuzzleHttp\Exception\RequestException $e) {
       $response = $e->getResponse();
       $body = json_decode($response->getBody(), false);
       $status_code = $response->getStatusCode();
-      if($status_code == 404 && !($this->config['404_error'] ?? false)) {
-        $response = new \stdClass;
-        $response->uri = $uri;
-        $response->error = "{$body->error}";
-        $response->code = $status_code;
-        return $response;
-      }
-      throw new RequestException(
-        "Received HTTP status code [$status_code] with error \"{$body->error}\"."
-      );
+      //if($status_code == 404 && !($this->config['404_error'] ?? false)) {
+        $save_response = new \stdClass;
+        $save_response->uri = $uri;
+        $save_response->method = $method;
+        $save_response->opts = $opts;
+        $save_response->status_code = $status_code;
+        $save_response->error = json_encode($e->getMessage());
+//        $save_response->error = "{$body->error}";
+        if (function_exists('handleEtsyResponse')) {
+          handleEtsyResponse($save_response, $uri, $method, $opts);
+        }
+        return $save_response;
+      //}
+      // throw new RequestException(
+      //   "Received HTTP status code [$status_code] with error \"{$body->error}\"."
+      // );
     }
   }
 
