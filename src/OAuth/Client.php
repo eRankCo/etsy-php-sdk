@@ -23,6 +23,7 @@ class Client {
   const CONNECT_URL = "https://www.etsy.com/oauth/connect";
   const TOKEN_URL = "https://api.etsy.com/v3/public/oauth/token";
   const API_URL = "https://api.etsy.com/v3";
+  const RETRIES = 3;
 
   /**
    * @var string
@@ -121,6 +122,17 @@ class Client {
     try {
       $client = $this->createHttpClient();
       $response = $client->{$method}(self::API_URL.$uri, $opts);
+      $attempt = 1;
+      if ($response->getStatusCode() == 429) {
+        sleep(1);
+        while ($attempt <= self::RETRIES) {
+          $response = $client->{$method}(self::API_URL.$uri, $opts);
+          if ($response->getStatusCode() != 429) {
+            $attempt = 4;
+          }
+          $attempt++;
+        }
+      }
       if (function_exists('handleEtsyResponse')) {
         handleEtsyResponse($response, $uri, $method, $opts);
       }
