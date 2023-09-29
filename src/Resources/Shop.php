@@ -267,10 +267,10 @@ class Shop extends Resource {
       "Receipt",
       $params
     );
-    if ($request) {
-      return $request->append(['shop_id' => $this->shop_id]);
-    }
     return $request;
+    // if ($request) {
+    //   return $request->append(['shop_id' => $this->shop_id]);
+    // }
   }
 
   /**
