@@ -261,13 +261,16 @@ class Shop extends Resource {
    * @return Etsy\Collection[Etsy\Resources\Receipt]
    */
   public function getReceipts(array $params = []) {
-    return $this->request(
+    $request = $this->request(
       "GET",
       "/application/shops/{$this->shop_id}/receipts",
       "Receipt",
       $params
-    )
-      ->append(['shop_id' => $this->shop_id]);
+    );
+    if ($request) {
+      return $request->append(['shop_id' => $this->shop_id]);
+    }
+    return $request;
   }
 
   /**
